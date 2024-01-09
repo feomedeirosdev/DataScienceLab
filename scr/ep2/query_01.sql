@@ -1,6 +1,8 @@
 WITH        tb_idade_base AS (
 
     SELECT      t2.seller_id,
+                min(t1.order_approved_at) AS dt_1a_venda,
+                min(t1.order_approved_at) AS dt_1a_venda,
                 CAST(max(julianday('2017-04-01') - julianday(t1.order_approved_at)) AS INT) AS idade_base_dias
 
     FROM        tb_orders AS t1
@@ -18,7 +20,6 @@ WITH        tb_idade_base AS (
 SELECT      t2.seller_id AS vendedor_id,
             t3.idade_base_dias,
             1 + CAST(t3.idade_base_dias / 30.4 AS INT) AS idade_base_omes,
-            julianday('2017-04-01') - julianday(max(t1.order_approved_at)) AS qtd_dias_ultima_venda,
 
             count(DISTINCT strftime('%m', t1.order_approved_at)) AS qtd_meses_ativados,
 
