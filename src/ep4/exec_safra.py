@@ -22,7 +22,7 @@ def import_query(path, **kwards):
 
 # Istanciando query para string
 query = import_query(os.path.join(src_dir, 'ep4/query_04.sql'))
-# query = query.format(date=date).split(';')
+query = query.format(date=date)
 
 # Conecta ao banco de dados (se não existir, será criado)
 conn = sqlite3.connect(os.path.join(data_dir, 'olist.db'))
@@ -31,22 +31,29 @@ conn = sqlite3.connect(os.path.join(data_dir, 'olist.db'))
 cursor = conn.cursor()
 
 try:
+    print()
+    print('Removendo dados duplicados... ', end='')
+    cursor.execute('DELETE FROM tb_book_sellers WHERE dt_ref = {date}'.format(date=date))
+    print('ok.')
+except:
+    print('Tabela não encontada... ')
+
+try:
+    print()
+    print('Criando tabela... ', end='')
     base_query = 'CREATE TABLE tb_book_sellers AS \n {query}'
     cursor.execute(base_query.format(query=query))
-except sqlite3.OperationalError as e:
-    print(f"Erro ao criar a tabela: {e}")
-    # Tente inserir dados se a tabela já existir
-    try:
-        base_query = 'INSERT INTO tb_book_sellers \n  {query}'
-        cursor.execute(base_query.format(query=query))
-    except sqlite3.Error as e:
-        print(f"Erro ao inserir dados na tabela: {e}")
-
-# try:
-#     base_query = 'CREATE TABLE tb_book_sellers AS \n {query}'
-#     cursor.execute(base_query.format(query=query))
-# except:
-#     base_query = 'INSERT INTO tb_book_sellers \n  {query}'
-#     cursor.execute(base_query.format(query=query))
+    print('ok.')
+except:
+    print()
+    print()
+    print('Tabela existente, inserindo dados... ', end='')
+    base_query = 'INSERT INTO tb_book_sellers \n  {query}'
+    cursor.execute(base_query.format(query=query))
+    print('ok.')
+    print()
 
 # cursor.execute('DELETE FROM tb_book_sellers WHERE dt_ref = {date}'.format(date=date))
+    
+conn.commit()
+conn.close()
