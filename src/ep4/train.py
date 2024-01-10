@@ -14,20 +14,19 @@ def import_query(path, **kwards):
     return result
 
 query = import_query( os.path.join(src_dir, 'ep4/create_safra.sql') )
+# print(query) # Retorna uma string
 
-# print(query)
-
-# Conectar ao banco de dados (se não existir, será criado)
+# Conecta ao banco de dados (se não existir, será criado)
 conn = sqlite3.connect(os.path.join(data_dir, 'olist.db'))
 
-# Criar um cursor
+# Cria um cursor
 cursor = conn.cursor()
 
 df = pd.read_sql(query, conn)
 lst_col = list(df.columns)
 
 # Variáveis para serem removidas
-to_remove = ['seller_id', 'seller_city']
+to_remove = ['seller_id', 'cidade']
 
 # Variável alvo, target, resposta
 target = 'flag_model'
@@ -39,7 +38,37 @@ for i in to_remove + [target]:
 cat_features = df[ lst_col ].dtypes[ df[ lst_col ].dtypes == 'object' ].index.tolist()
 num_features = list(set(lst_col) - set(cat_features))
 
-num_features
+print(type(num_features))
+print(num_features)
+print(type(cat_features))
+print(cat_features)
+
+from sklearn import tree
+
+clf = tree.DecisionTreeClassifier(max_depth=10)
+clf.fit( df[num_features], df[target] )
+
+y_pred = clf.predict( df[num_features] )
+y_prod = clf.predict_proba( df[num_features] )
+
+print(y_pred)
+print(type(y_pred))
+print(y_prod)
+print(type(y_prod))
+
+from sklearn import metrics
+
+print()
+print(metrics.confusion_matrix(df[target], y_pred))
+print(type(metrics.confusion_matrix(df[target], y_pred)))
+print()
+
+print(clf.feature_importances_)
+clf.feature_importances_
+
+features_importance = pd.Series(clf.feature_importances_, index = num_features)
+
+features_importance.sort_values(ascending=False)[:10]
 
 # # Confirmar as alterações
 # # conn.commit()

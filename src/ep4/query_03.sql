@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS tb_book_sellers;
+-- DROP TABLE IF EXISTS tb_book_sellers;
 
 CREATE TABLE tb_book_sellers AS
 
@@ -20,8 +20,8 @@ CREATE TABLE tb_book_sellers AS
     )
 
     SELECT      t2.seller_id, -- vendedor
-                seller_city AS cidade, -- cidade do vendedor
-                seller_state AS estado, -- estado do vendedor
+                seller_city, -- cidade do vendedor
+                seller_state, -- estado do vendedor
                 avg(t6.review_score) AS avg_review_score, -- média da pontuação
                 t3.idade_base_dias, -- idade do vendedor em dias (após a primeira venda)
                 1 + CAST(t3.idade_base_dias / 30.4 AS INT) AS idade_base_omes, -- mes ativo
